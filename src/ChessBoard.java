@@ -17,19 +17,43 @@ public class ChessBoard {
                 }
                 else{
                     if (chessBoard[i][j].getColor().equals("Black")) {
-                        if (chessBoard[i][j].getName().equals("Knight")) {
+                        if(chessBoard[i][j] instanceof Knight){
                             System.out.print("n ");
                         }
-                        else {
-                            System.out.print(Character.toLowerCase(chessBoard[i][j].getName().charAt(0)) + " ");
+                        else if(chessBoard[i][j] instanceof Pawn){
+                            System.out.print("p ");
+                        }
+                        else if(chessBoard[i][j] instanceof Rook){
+                            System.out.print("r ");
+                        }
+                        else if(chessBoard[i][j] instanceof Bishop){
+                            System.out.print("b ");
+                        }
+                        else if(chessBoard[i][j] instanceof Queen){
+                            System.out.print("q ");
+                        }
+                        else if(chessBoard[i][j] instanceof King){
+                            System.out.print("k ");
                         }
                     }
                     else{
-                        if (chessBoard[i][j].getName().equals("Knight")) {
+                        if(chessBoard[i][j] instanceof Knight){
                             System.out.print("N ");
                         }
-                        else{
-                            System.out.print(chessBoard[i][j].getName().charAt(0) + " ");
+                        else if(chessBoard[i][j] instanceof Pawn){
+                            System.out.print("P ");
+                        }
+                        else if(chessBoard[i][j] instanceof Rook){
+                            System.out.print("R ");
+                        }
+                        else if(chessBoard[i][j] instanceof Bishop){
+                            System.out.print("B ");
+                        }
+                        else if(chessBoard[i][j] instanceof Queen){
+                            System.out.print("Q ");
+                        }
+                        else if(chessBoard[i][j] instanceof King){
+                            System.out.print("K ");
                         }
                     }
                 }

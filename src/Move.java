@@ -35,7 +35,5 @@ public class Move {
     }
     public void printInfo() {
         System.out.println("X: " + x);
-        System.out.println("Y: " + y);
-        System.out.println("Piece: " + piece.getName());
-    }
+        System.out.println("Y: " + y);}
 }

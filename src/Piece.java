@@ -1,18 +1,13 @@
 public class Piece {
-    private String name;
     private final String color;
     private int x;
     private int y;
     private boolean isAlive;
-    public Piece(String name, String color, int x, int y) {
-        this.name = name;
+    public Piece(String color, int x, int y) {
         this.color = color;
         this.x = x;
         this.y = y;
         isAlive = true;
-    }
-    public String getName() {
-        return name;
     }
     public String getColor() {
         return color;
@@ -35,9 +30,6 @@ public class Piece {
     public void setIsAlive(boolean isAlive) {
         this.isAlive = isAlive;
     }
-    public void setName(String name) {
-        this.name = name;
-    }
     public void move(int x, int y) {
         this.x = x;
         this.y = y;
@@ -45,11 +37,7 @@ public class Piece {
     public void capture(Piece piece) {
         piece.setIsAlive(false);
     }
-    public void promote(Piece piece, String name) {
-        piece.setName(name);
-    }
     public void printInfo() {
-        System.out.println("Name: " + name);
         System.out.println("Color: " + color);
         System.out.println("X: " + x);
         System.out.println("Y: " + y);

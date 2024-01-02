@@ -1,2 +1,5 @@
-package PACKAGE_NAME;public class Queen {
+public class Queen extends Piece{
+    public Queen(String color, int x, int y) {
+        super(color, x, y);
+    }
 }

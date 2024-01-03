@@ -16,6 +16,7 @@ public class Game {
         initializeGame();;
 
         while (gameOn) {
+
             chessBoard.displayBoard();
 
             if (blackPlayer.getIsTurn()) {
@@ -27,41 +28,67 @@ public class Game {
                 System.out.println("White's turn.");
             }
 
-            int x;
-            int y;
+            int xStart;
+            int yStart;
+            Piece pieceToMove;
+            Move newMove = null;
+            chessBoard.setPiece(null,3,6);
+
             do{
                 System.out.println("Enter the x coordinate of the piece you want to move: ");
-                x = scanner.nextInt();
+                xStart = scanner.nextInt();
                 System.out.println("Enter the y coordinate of the piece you want to move: ");
-                y = scanner.nextInt();
+                yStart = scanner.nextInt();;
+            }while(!validPiece(xStart, yStart));
 
-                Piece pieceToMove = chessBoard.getPiece(x, y);
-            }while(unvalidPiece(x, y));
-            chessBoard.setPiece(null, 3,6);
-            for(Move move : chessBoard.getPiece(x, y).getLegalMoves(chessBoard)){
-                move.printInfo();
-            }
+            pieceToMove = chessBoard.getPiece(xStart, yStart);
+
+
+            do{
+                System.out.println("Enter the x coordinate where you want to move: ");
+                int xEnd = scanner.nextInt();
+                System.out.println("Enter the y coordinate where you want to move: ");
+                int yEnd = scanner.nextInt();
+
+                if (outOfBounds(xEnd, yEnd)) {
+                    System.out.println("That is not a valid location.");
+                    continue;
+                }
+
+                boolean isCapture = chessBoard.getPiece(xEnd, yEnd) != null;
+                newMove = new Move(xEnd, yEnd, pieceToMove, isCapture);
+            }while(!pieceToMove.getLegalMoves(chessBoard).contains(newMove));
+
+            chessBoard.movePiece(pieceToMove, newMove);
+            chessBoard.displayBoard();
 
             switchTurns();
             gameOn = false;
         }
     }
-    public boolean unvalidPiece(int x, int y){
-        if (x < 0 || x > 7 || y < 0 || y > 7) {
+    public boolean validPiece(int x, int y){
+        if (outOfBounds(x, y)) {
             System.out.println("That is not a valid location.");
-            return true;
+            return false;
         }
         else if (chessBoard.getPiece(x, y) == null) {
             System.out.println("There is no piece at that location.");
-            return true;
+            return false;
         }
         else if (!currentPlayer.getColor().equals(chessBoard.getPiece(x, y).getColor())) {
             System.out.println("That is not your piece.");
-            return true;
-        }
-        else{
             return false;
         }
+        else if(chessBoard.getPiece(x, y).getLegalMoves(chessBoard).isEmpty()){
+            System.out.println("That piece has no legal moves.");
+            return false;
+        }
+        else{
+            return true;
+        }
+    }
+    public boolean outOfBounds(int x, int y){
+        return x < 0 || x > 7 || y < 0 || y > 7;
     }
     public void switchTurns(){
         if (blackPlayer.getIsTurn()) {

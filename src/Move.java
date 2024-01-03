@@ -1,3 +1,5 @@
+import java.util.Objects;
+
 public class Move {
     private int x;
     private int y;
@@ -35,5 +37,17 @@ public class Move {
     }
     public void printInfo() {
         System.out.println("Move on X: " + x + " Y: " + y + " Captured: " + isCapture + " Piece: " + piece.getColor() + " " + piece.getClass().getSimpleName());
+    }
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (o == null || getClass() != o.getClass()) return false;
+        Move move = (Move) o;
+        return x == move.x && y == move.y;
+    }
+
+    @Override
+    public int hashCode() {
+        return Objects.hash(x, y);
     }
 }

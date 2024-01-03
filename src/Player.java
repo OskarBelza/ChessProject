@@ -24,6 +24,11 @@ public class Player {
     public void removePiece(Piece piece) {
         pieces.remove(piece);
     }
+    public void printPieces() {
+        for (Piece piece : pieces) {
+            piece.printInfo();
+        }
+    }
     public void printInfo() {
         System.out.println("Color: " + color);
         System.out.println("Is Turn: " + isTurn);

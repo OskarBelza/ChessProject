@@ -20,15 +20,17 @@ public class Piece {
     public int getY() {
         return y;
     }
+    public void setX(int newX) {
+        x = newX;
+    }
+    public void setY(int newY) {
+        y = newY;
+    }
     public boolean getIsAlive() {
         return isAlive;
     }
     public void setIsAlive(boolean isAlive) {
         this.isAlive = isAlive;
-    }
-    public void move(int x, int y) {
-        this.x = x;
-        this.y = y;
     }
     public void capture(Piece piece) {
         piece.setIsAlive(false);

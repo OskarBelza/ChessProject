@@ -9,6 +9,15 @@ public class ChessBoard {
     public Piece getPiece(int x, int y) {
         return chessBoard[x][y];
     }
+    public void movePiece(Piece piece, Move move) {
+        if(move.getIsCapture()){
+            piece.capture(chessBoard[move.getX()][move.getY()]);
+        }
+        chessBoard[piece.getX()][piece.getY()] = null;
+        chessBoard[move.getX()][move.getY()] = piece;
+        piece.setX(move.getX());
+        piece.setY(move.getY());
+    }
     public void displayBoard(){
         for(int i = 0; i < 8; i++){
             for(int j = 0; j < 8; j++){

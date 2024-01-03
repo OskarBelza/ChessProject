@@ -34,6 +34,6 @@ public class Move {
         this.isCapture = isCapture;
     }
     public void printInfo() {
-        System.out.println("X: " + x);
-        System.out.println("Y: " + y);}
+        System.out.println("Move on X: " + x + " Y: " + y + " Captured: " + isCapture + " Piece: " + piece.getColor() + " " + piece.getClass().getSimpleName());
+    }
 }

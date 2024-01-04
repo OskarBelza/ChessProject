@@ -1,3 +1,5 @@
+import java.util.ArrayList;
+import java.util.List;
 import java.util.Scanner;
 
 public class Game {
@@ -28,21 +30,21 @@ public class Game {
                 System.out.println("White's turn.");
             }
 
-            int xStart;
-            int yStart;
             Piece pieceToMove;
             Move newMove = null;
             chessBoard.setPiece(null,3,6);
 
             do{
                 System.out.println("Enter the x coordinate of the piece you want to move: ");
-                xStart = scanner.nextInt();
+                int xStart = scanner.nextInt();
                 System.out.println("Enter the y coordinate of the piece you want to move: ");
-                yStart = scanner.nextInt();;
-            }while(!validPiece(xStart, yStart));
+                int yStart = scanner.nextInt();;
 
-            pieceToMove = chessBoard.getPiece(xStart, yStart);
-
+                if(validPiece(xStart, yStart)){
+                    pieceToMove = chessBoard.getPiece(xStart, yStart);
+                    break;
+                }
+            }while(true);
 
             do{
                 System.out.println("Enter the x coordinate where you want to move: ");
@@ -50,14 +52,23 @@ public class Game {
                 System.out.println("Enter the y coordinate where you want to move: ");
                 int yEnd = scanner.nextInt();
 
-                if (outOfBounds(xEnd, yEnd)) {
+                if (chessBoard.outOfBounds(xEnd, yEnd)) {
                     System.out.println("That is not a valid location.");
                     continue;
                 }
 
                 boolean isCapture = chessBoard.getPiece(xEnd, yEnd) != null;
                 newMove = new Move(xEnd, yEnd, pieceToMove, isCapture);
-            }while(!pieceToMove.getLegalMoves(chessBoard).contains(newMove));
+                List<Move> legalMoves = pieceToMove.getLegalMoves(chessBoard);
+
+                if(legalMoves.contains(newMove)){
+                    break;
+                }
+                else{
+                    System.out.println("That is not a legal move.");
+                }
+
+            }while(true);
 
             chessBoard.movePiece(pieceToMove, newMove);
             chessBoard.displayBoard();
@@ -67,7 +78,7 @@ public class Game {
         }
     }
     public boolean validPiece(int x, int y){
-        if (outOfBounds(x, y)) {
+        if (chessBoard.outOfBounds(x, y)) {
             System.out.println("That is not a valid location.");
             return false;
         }
@@ -86,9 +97,6 @@ public class Game {
         else{
             return true;
         }
-    }
-    public boolean outOfBounds(int x, int y){
-        return x < 0 || x > 7 || y < 0 || y > 7;
     }
     public void switchTurns(){
         if (blackPlayer.getIsTurn()) {

@@ -18,6 +18,9 @@ public class ChessBoard {
         piece.setX(move.getX());
         piece.setY(move.getY());
     }
+    public boolean outOfBounds(int x, int y){
+        return x < 0 || x > 7 || y < 0 || y > 7;
+    }
     public void displayBoard(){
         for(int i = 0; i < 8; i++){
             for(int j = 0; j < 8; j++){

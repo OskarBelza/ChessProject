@@ -1,33 +1,37 @@
 import java.util.Objects;
 
 public class Move {
-    private int x;
-    private int y;
+    private int xTarget;
+    private int yTarget;
+    private int xStart;
+    private int yStart;
     private Piece piece;
     private boolean isCapture;
-    public Move(int x, int y, Piece piece, boolean isCapture) {
-        this.x = x;
-        this.y = y;
+    private Piece capturedPiece;
+    public Move(int xTarget, int yTarget, Piece piece, boolean isCapture, Piece capturedPiece) {
+        this.xTarget = xTarget;
+        this.yTarget = yTarget;
+        this.xStart = piece.getX();
+        this.yStart = piece.getY();
         this.piece = piece;
         this.isCapture = isCapture;
+        this.capturedPiece = capturedPiece;
     }
-    public int getX() {
-        return x;
+    public int getxTarget() {
+        return xTarget;
     }
-    public int getY() {
-        return y;
+    public int getxStart() {
+        return xStart;
     }
+    public int getyTarget() {
+        return yTarget;
+    }
+    public int getyStart() {return yStart;}
     public Piece getPiece() {
         return piece;
     }
     public boolean getIsCapture() {
         return isCapture;
-    }
-    public void setX(int x) {
-        this.x = x;
-    }
-    public void setY(int y) {
-        this.y= y;
     }
     public void setPiece(Piece piece) {
         this.piece = piece;
@@ -35,19 +39,22 @@ public class Move {
     public void setIsCapture(boolean isCapture) {
         this.isCapture = isCapture;
     }
+    public Piece getCapturedPiece() {
+        return capturedPiece;
+    }
     public void printInfo() {
-        System.out.println("Move on X: " + x + " Y: " + y + " Captured: " + isCapture + " Piece: " + piece.getColor() + " " + piece.getClass().getSimpleName());
+        System.out.println("Move on X: " + xTarget + " Y: " + yTarget + " Captured: " + isCapture + " Piece: " + piece.getColor() + " " + piece.getClass().getSimpleName());
     }
     @Override
     public boolean equals(Object o) {
         if (this == o) return true;
         if (o == null || getClass() != o.getClass()) return false;
         Move move = (Move) o;
-        return x == move.x && y == move.y;
+        return xTarget == move.xTarget && yTarget == move.yTarget;
     }
 
     @Override
     public int hashCode() {
-        return Objects.hash(x, y);
+        return Objects.hash(xTarget, yTarget);
     }
 }

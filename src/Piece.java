@@ -32,8 +32,11 @@ public class Piece {
     public void setIsAlive(boolean isAlive) {
         this.isAlive = isAlive;
     }
-    public void capture(Piece piece) {
-        piece.setIsAlive(false);
+    public void capture() {
+        this.setIsAlive(false);
+    }
+    public void unCapture() {
+        this.setIsAlive(true);
     }
     public List<Move> getDiagonalMoves(ChessBoard chessBoard) {
         List<Move> moves = new ArrayList<>();
@@ -42,28 +45,36 @@ public class Piece {
         while (x < 7 && y < 7) {
             x++;
             y++;
-            addMoveIfLegal(moves, x, y, chessBoard);
+            if (!addMoveIfLegal(moves, x, y, chessBoard)){
+                break;
+            }
         }
         x = this.x;
         y = this.y;
         while (x > 0 && y > 0) {
             x--;
             y--;
-            addMoveIfLegal(moves, x, y, chessBoard);
+            if (!addMoveIfLegal(moves, x, y, chessBoard)){
+                break;
+            }
         }
         x = this.x;
         y = this.y;
         while (x < 7 && y > 0) {
             x++;
             y--;
-            addMoveIfLegal(moves, x, y, chessBoard);
+            if (!addMoveIfLegal(moves, x, y, chessBoard)){
+                break;
+            }
         }
         x = this.x;
         y = this.y;
         while (x > 0 && y < 7) {
             x--;
             y++;
-            addMoveIfLegal(moves, x, y, chessBoard);
+            if (!addMoveIfLegal(moves, x, y, chessBoard)){
+                break;
+            }
         }
         return moves;
     }
@@ -73,40 +84,51 @@ public class Piece {
         int y = this.y;
         while (x < 7) {
             x++;
-            addMoveIfLegal(moves, x, y, chessBoard);
+            if (!addMoveIfLegal(moves, x, y, chessBoard)){
+                break;
+            }
         }
         x = this.x;
         y = this.y;
         while (x > 0) {
             x--;
-            addMoveIfLegal(moves, x, y, chessBoard);
+            if (!addMoveIfLegal(moves, x, y, chessBoard)){
+                break;
+            }
         }
         x = this.x;
         y = this.y;
         while (y < 7) {
             y++;
-            addMoveIfLegal(moves, x, y, chessBoard);
+            if (!addMoveIfLegal(moves, x, y, chessBoard)){
+                break;
+            }
         }
         x = this.x;
         y = this.y;
         while (y > 0) {
             y--;
-            addMoveIfLegal(moves, x, y, chessBoard);
+            if (!addMoveIfLegal(moves, x, y, chessBoard)){
+                break;
+            }
         }
         return moves;
     }
     public List<Move> getLegalMoves(ChessBoard chessBoard){
         return null;
     }
-    public void addMoveIfLegal(List<Move> moves, int x, int y, ChessBoard chessBoard){
+    public boolean addMoveIfLegal(List<Move> moves, int x, int y, ChessBoard chessBoard){
         if(!chessBoard.outOfBounds(x, y)){
             if(chessBoard.getPiece(x, y) == null){
-                moves.add(new Move(x, y, this, false));
+                moves.add(new Move(x, y, this, false, null));
+                return true;
             }
             else if(!chessBoard.getPiece(x, y).getColor().equals(this.getColor())){
-                moves.add(new Move(x, y, this, true));
+                moves.add(new Move(x, y, this, true, chessBoard.getPiece(x, y)));
+                return false;
             }
         }
+        return false;
     }
     public void printInfo() {
         System.out.println("Color: " + color);

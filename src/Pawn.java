@@ -31,7 +31,7 @@ public class Pawn extends Piece{
     public void addLegalMove(List<Move> moves, int x, int y, ChessBoard chessBoard){
         if(!chessBoard.outOfBounds(x, y)){
             if(chessBoard.getPiece(x, y) == null){
-                moves.add(new Move(x, y, this, false));
+                moves.add(new Move(x, y, this, false, null));
             }
         }
     }
@@ -39,7 +39,7 @@ public class Pawn extends Piece{
         if (!chessBoard.outOfBounds(x, y)) {
             if(chessBoard.getPiece(x, y) != null){
                 if (!chessBoard.getPiece(x, y).getColor().equals(this.getColor())) {
-                    moves.add(new Move(x, y, this, true));
+                    moves.add(new Move(x, y, this, true, chessBoard.getPiece(x, y)));
                 }
             }
         }

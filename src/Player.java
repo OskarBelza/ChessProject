@@ -3,10 +3,12 @@ import java.util.LinkedList;
 public class Player {
     private String color;
     private boolean isTurn;
-    public LinkedList<Piece> pieces;
-    public Player(String color) {
+    private LinkedList<Piece> pieces;
+    private Piece king;
+    public Player(String color, Piece king) {
         this.color = color;
         this.pieces = new LinkedList<Piece>();
+        this.king = king;
         isTurn = false;
     }
     public String getColor() {
@@ -23,6 +25,18 @@ public class Player {
     }
     public void removePiece(Piece piece) {
         pieces.remove(piece);
+    }
+    public LinkedList<Piece> getPiecesAlive() {
+        LinkedList<Piece> piecesAlive = new LinkedList<Piece>();
+        for(Piece piece : pieces) {
+            if(piece.getIsAlive()) {
+                piecesAlive.add(piece);
+            }
+        }
+        return piecesAlive;
+    }
+    public Piece getKing() {
+        return king;
     }
     public void printPieces() {
         for (Piece piece : pieces) {

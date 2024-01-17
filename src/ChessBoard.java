@@ -1,7 +1,11 @@
+import java.util.Stack;
+
 public class ChessBoard {
     public Piece[][] chessBoard;
+    public Stack<Move> moveHistory;
     public ChessBoard() {
         chessBoard = new Piece[8][8];
+        moveHistory = new Stack<>();
     }
     public void setPiece(Piece piece, int x, int y) {
         chessBoard[x][y] = piece;
@@ -9,14 +13,31 @@ public class ChessBoard {
     public Piece getPiece(int x, int y) {
         return chessBoard[x][y];
     }
-    public void movePiece(Piece piece, Move move) {
+    public void movePiece(Move move) {
         if(move.getIsCapture()){
-            piece.capture(chessBoard[move.getX()][move.getY()]);
+            move.getCapturedPiece().capture();
         }
-        chessBoard[piece.getX()][piece.getY()] = null;
-        chessBoard[move.getX()][move.getY()] = piece;
-        piece.setX(move.getX());
-        piece.setY(move.getY());
+        chessBoard[move.getxStart()][move.getyStart()] = null;
+        chessBoard[move.getxTarget()][move.getyTarget()] = move.getPiece();
+        move.getPiece().setX(move.getxTarget());
+        move.getPiece().setY(move.getyTarget());
+        moveHistory.push(move);
+    }
+    public void undoMovePiece() {
+        if(!moveHistory.isEmpty()) {
+            Move move = moveHistory.pop();
+            if (move.getIsCapture()) {
+                move.getCapturedPiece().unCapture();
+                chessBoard[move.getxTarget()][move.getyTarget()] = move.getCapturedPiece();
+                chessBoard[move.getxStart()][move.getyStart()] = move.getPiece();
+            }
+            else{
+                chessBoard[move.getxTarget()][move.getyTarget()] = null;
+                chessBoard[move.getxStart()][move.getyStart()] = move.getPiece();
+            }
+            move.getPiece().setX(move.getxStart());
+            move.getPiece().setY(move.getyStart());
+        }
     }
     public boolean outOfBounds(int x, int y){
         return x < 0 || x > 7 || y < 0 || y > 7;

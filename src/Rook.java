@@ -1,8 +1,15 @@
 import java.util.ArrayList;
 import java.util.List;
 public class Rook extends Piece{
-    public Rook(String color, int x, int y) {
-        super(color, x, y);
+    private boolean hasMoved = false;
+    public Rook(Player player, int x, int y) {
+        super(player, x, y);
+    }
+    public boolean getHasMoved() {
+        return hasMoved;
+    }
+    public void setHasMoved(boolean hasMoved) {
+        this.hasMoved = hasMoved;
     }
     @Override
     public List<Move> getLegalMoves(ChessBoard chessBoard) {

@@ -4,12 +4,14 @@ public class Player {
     private String color;
     private boolean isTurn;
     private LinkedList<Piece> pieces;
+    private LinkedList<Piece> enemyPieces;
     private Piece king;
-    public Player(String color, Piece king) {
+    public Player(String color) {
         this.color = color;
         this.pieces = new LinkedList<Piece>();
-        this.king = king;
+        this.king = null;
         isTurn = false;
+        this.enemyPieces = new LinkedList<Piece>();
     }
     public String getColor() {
         return color;
@@ -23,6 +25,9 @@ public class Player {
     public void addPiece(Piece piece) {
         pieces.add(piece);
     }
+    public void addEnemyPiece(Piece piece) {
+        enemyPieces.add(piece);
+    }
     public void removePiece(Piece piece) {
         pieces.remove(piece);
     }
@@ -35,8 +40,20 @@ public class Player {
         }
         return piecesAlive;
     }
+    public LinkedList<Piece> getEnemyPiecesAlive() {
+        LinkedList<Piece> piecesAlive = new LinkedList<Piece>();
+        for(Piece piece : enemyPieces) {
+            if(piece.getIsAlive()) {
+                piecesAlive.add(piece);
+            }
+        }
+        return piecesAlive;
+    }
     public Piece getKing() {
         return king;
+    }
+    public void setKing(Piece king) {
+        this.king = king;
     }
     public void printPieces() {
         for (Piece piece : pieces) {

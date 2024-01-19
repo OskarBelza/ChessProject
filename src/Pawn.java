@@ -2,8 +2,8 @@ import java.util.ArrayList;
 import java.util.List;
 
 public class Pawn extends Piece{
-    public Pawn(String color, int x, int y) {
-        super(color, x, y);
+    public Pawn(Player player, int x, int y) {
+        super(player, x, y);
     }
     @Override
     public List<Move> getLegalMoves(ChessBoard chessBoard){

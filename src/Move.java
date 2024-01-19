@@ -8,6 +8,8 @@ public class Move {
     private Piece piece;
     private boolean isCapture;
     private Piece capturedPiece;
+    private boolean isCastle;
+    private Piece castledRook;
     public Move(int xTarget, int yTarget, Piece piece, boolean isCapture, Piece capturedPiece) {
         this.xTarget = xTarget;
         this.yTarget = yTarget;
@@ -16,6 +18,23 @@ public class Move {
         this.piece = piece;
         this.isCapture = isCapture;
         this.capturedPiece = capturedPiece;
+    }
+    public Move(int xTarget, int yTarget, Piece piece, boolean isCapture, Piece capturedPiece, boolean isCastle, Piece castledRook) {
+        this.xTarget = xTarget;
+        this.yTarget = yTarget;
+        this.xStart = piece.getX();
+        this.yStart = piece.getY();
+        this.piece = piece;
+        this.isCapture = isCapture;
+        this.capturedPiece = capturedPiece;
+        this.isCastle = isCastle;
+        this.castledRook = castledRook;
+    }
+    public Piece getCastledRook() {
+        return castledRook;
+    }
+    public boolean getIsCastle() {
+        return isCastle;
     }
     public int getxTarget() {
         return xTarget;
@@ -43,7 +62,7 @@ public class Move {
         return capturedPiece;
     }
     public void printInfo() {
-        System.out.println("Move on X: " + xTarget + " Y: " + yTarget + " Captured: " + isCapture + " Piece: " + piece.getColor() + " " + piece.getClass().getSimpleName());
+        System.out.println("Move on X: " + xTarget + " Y: " + yTarget + " Captured: " + isCapture + " Piece: " + piece.getColor() + " " + piece.getClass().getSimpleName() + " " + isCastle+ " "+ castledRook);
     }
     @Override
     public boolean equals(Object o) {

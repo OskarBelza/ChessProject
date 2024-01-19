@@ -1,8 +1,8 @@
 import java.util.ArrayList;
 import java.util.List;
 public class Queen extends Piece{
-    public Queen(String color, int x, int y) {
-        super(color, x, y);
+    public Queen(Player player, int x, int y) {
+        super(player, x, y);
     }
     @Override
     public List<Move> getLegalMoves(ChessBoard chessBoard) {

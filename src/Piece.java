@@ -1,18 +1,26 @@
 import java.util.ArrayList;
 import java.util.List;
 public class Piece {
-    private final String color;
-    private int x;
-    private int y;
-    private boolean isAlive;
-    public Piece(String color, int x, int y) {
-        this.color = color;
+    protected Player player;
+    protected int x;
+    protected int y;
+    protected boolean isAlive;
+    protected boolean hasMoved;
+    public Piece(Player player, int x, int y) {
+        this.player = player;
         this.x = x;
         this.y = y;
         isAlive = true;
+        hasMoved = false;
+    }
+    public boolean getHasMoved() {
+        return hasMoved;
+    }
+    public void setHasMoved(boolean hasMoved) {
+        this.hasMoved = hasMoved;
     }
     public String getColor() {
-        return color;
+        return player.getColor();
     }
     public int getX() {
         return x;
@@ -131,7 +139,7 @@ public class Piece {
         return false;
     }
     public void printInfo() {
-        System.out.println("Color: " + color);
+        System.out.println("Color: " + getColor());
         System.out.println("X: " + x);
         System.out.println("Y: " + y);
         System.out.println("Is Alive: " + isAlive);

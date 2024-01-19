@@ -2,8 +2,8 @@ import java.util.ArrayList;
 import java.util.List;
 
 public class Knight extends Piece{
-    public Knight(String color, int x, int y) {
-        super(color, x, y);
+    public Knight(Player player, int x, int y) {
+        super(player, x, y);
     }
     @Override
     public List<Move> getLegalMoves(ChessBoard chessBoard) {

@@ -14,29 +14,48 @@ public class ChessBoard {
         return chessBoard[x][y];
     }
     public void movePiece(Move move) {
-        if(move.getIsCapture()){
-            move.getCapturedPiece().capture();
+        if(move.getIsCastle())
+        {
+            chessBoard[move.getxStart()][move.getyStart()] = move.getCastledRook();
+            chessBoard[move.getxTarget()][move.getyTarget()] = move.getPiece();
+            move.getPiece().setX(move.getxTarget());
+            move.getPiece().setY(move.getyTarget());
+            move.getCastledRook().setX(move.getxStart());
+            move.getCastledRook().setY(move.getyStart());
+            moveHistory.push(move);
         }
-        chessBoard[move.getxStart()][move.getyStart()] = null;
-        chessBoard[move.getxTarget()][move.getyTarget()] = move.getPiece();
-        move.getPiece().setX(move.getxTarget());
-        move.getPiece().setY(move.getyTarget());
-        moveHistory.push(move);
+        else{
+            if(move.getIsCapture()){
+                move.getCapturedPiece().capture();
+            }
+            chessBoard[move.getxStart()][move.getyStart()] = null;
+            chessBoard[move.getxTarget()][move.getyTarget()] = move.getPiece();
+            move.getPiece().setX(move.getxTarget());
+            move.getPiece().setY(move.getyTarget());
+            moveHistory.push(move);
+        }
     }
     public void undoMovePiece() {
         if(!moveHistory.isEmpty()) {
             Move move = moveHistory.pop();
-            if (move.getIsCapture()) {
-                move.getCapturedPiece().unCapture();
-                chessBoard[move.getxTarget()][move.getyTarget()] = move.getCapturedPiece();
+            if (move.getIsCastle()) {
                 chessBoard[move.getxStart()][move.getyStart()] = move.getPiece();
-            }
-            else{
-                chessBoard[move.getxTarget()][move.getyTarget()] = null;
+                chessBoard[move.getxTarget()][move.getyTarget()] = move.getCastledRook();
+                move.getPiece().setX(move.getxStart());
+                move.getPiece().setY(move.getyStart());
+                move.getCastledRook().setX(move.getxTarget());
+                move.getCastledRook().setY(move.getyTarget());
+            } else {
+                if (move.getIsCapture()) {
+                    move.getCapturedPiece().unCapture();
+                    chessBoard[move.getxTarget()][move.getyTarget()] = move.getCapturedPiece();
+                } else {
+                    chessBoard[move.getxTarget()][move.getyTarget()] = null;
+                }
                 chessBoard[move.getxStart()][move.getyStart()] = move.getPiece();
+                move.getPiece().setX(move.getxStart());
+                move.getPiece().setY(move.getyStart());
             }
-            move.getPiece().setX(move.getxStart());
-            move.getPiece().setY(move.getyStart());
         }
     }
     public boolean outOfBounds(int x, int y){
@@ -94,4 +113,5 @@ public class ChessBoard {
             System.out.println();
         }
     }
+
 }

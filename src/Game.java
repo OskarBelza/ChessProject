@@ -15,10 +15,7 @@ public class Game {
         initializeGame();;
 
         while (gameOn) {
-
-            chessBoard.displayBoard();
             setCurrentPlayer();
-
             Piece pieceToMove;
             Move newMove = null;
 
@@ -51,7 +48,8 @@ public class Game {
                 List<Move> legalMoves = pieceToMove.getLegalMoves(chessBoard);
 
                 if(legalMoves.contains(newMove)){
-                    chessBoard.movePiece(newMove);
+                    int id = legalMoves.indexOf(newMove);
+                    chessBoard.movePiece(legalMoves.get(id));
                     if (isCheck(currentPlayer.getColor())){
                         chessBoard.undoMovePiece();
                         System.out.println("That move puts you in check.");
@@ -65,13 +63,17 @@ public class Game {
                 }
 
             }while(true);
+            System.out.println(newMove.getIsCastle());
+            pieceToMove.setHasMoved(true);
+            for(Move move : whitePlayer.getKing().getLegalMoves(chessBoard)){
+                move.printInfo();
+            }
+            chessBoard.displayBoard();
 
             if(isCheckMate(currentPlayer.getColor())){
                 System.out.println("Game over, checkmate " + currentPlayer.getColor() + " won");
                 gameOn = false;
             }
-
-            chessBoard.displayBoard();
             switchTurns();
         }
     }
@@ -112,7 +114,6 @@ public class Game {
                 for (Move move : piece.getLegalMoves(chessBoard)) {
                     chessBoard.movePiece(move);
                     if (!isCheck("Black")) {
-                        move.printInfo();
                         chessBoard.undoMovePiece();
                         return false;
                     }
@@ -167,32 +168,30 @@ public class Game {
         }
     }
     public void initializeGame(){
-        chessBoard.setPiece(new Rook("Black", 0, 0), 0, 0);
-        chessBoard.setPiece(new Knight("Black", 1, 0), 1, 0);
-        chessBoard.setPiece(new Bishop("Black", 2, 0), 2, 0);
-        chessBoard.setPiece(new Queen("Black", 3, 0), 3, 0);
-        chessBoard.setPiece(new King("Black", 4, 0), 4, 0);
-        chessBoard.setPiece(new Bishop("Black", 5, 0), 5, 0);
-        chessBoard.setPiece(new Knight("Black", 6, 0), 6, 0);
-        chessBoard.setPiece(new Rook("Black", 7, 0), 7, 0);
+        blackPlayer = new Player("Black");
+        whitePlayer = new Player("White");
+        chessBoard.setPiece(new Rook(blackPlayer, 0, 0), 0, 0);
+        chessBoard.setPiece(new Knight(blackPlayer,1, 0), 1, 0);
+        chessBoard.setPiece(new Bishop(blackPlayer, 2, 0), 2, 0);
+        chessBoard.setPiece(new Queen(blackPlayer, 3, 0), 3, 0);
+        chessBoard.setPiece(new King(blackPlayer, 4, 0), 4, 0);
+        chessBoard.setPiece(new Bishop(blackPlayer, 5, 0), 5, 0);
+        chessBoard.setPiece(new Knight(blackPlayer, 6, 0), 6, 0);
+        chessBoard.setPiece(new Rook(blackPlayer, 7, 0), 7, 0);
         for(int i = 0; i < 8; i++){
-            chessBoard.setPiece(new Pawn("Black", i, 1), i, 1);
+            chessBoard.setPiece(new Pawn(blackPlayer, i, 1), i, 1);
         }
         for(int i = 0; i < 8; i++){
-            chessBoard.setPiece(new Pawn("White", i, 6), i, 6);
+            chessBoard.setPiece(new Pawn(whitePlayer, i, 6), i, 6);
         }
-        chessBoard.setPiece(new Rook("White", 0, 7), 0, 7);
-        chessBoard.setPiece(new Knight("White", 1, 7), 1, 7);
-        chessBoard.setPiece(new Bishop("White", 2, 7), 2, 7);
-        chessBoard.setPiece(new Queen("White", 3, 7), 3, 7);
-        chessBoard.setPiece(new King("White", 4, 7), 4, 7);
-        chessBoard.setPiece(new Bishop("White", 5, 7), 5, 7);
-        chessBoard.setPiece(new Knight("White", 6, 7), 6, 7);
-        chessBoard.setPiece(new Rook("White", 7, 7), 7, 7);
-
-        blackPlayer = new Player("Black", chessBoard.getPiece(4, 0));
-        whitePlayer = new Player("White", chessBoard.getPiece(4, 7));
-
+        chessBoard.setPiece(new Rook(whitePlayer, 0, 7), 0, 7);
+        chessBoard.setPiece(new Knight(whitePlayer, 1, 7), 1, 7);
+        chessBoard.setPiece(new Bishop(whitePlayer, 2, 7), 2, 7);
+        chessBoard.setPiece(new Queen(whitePlayer, 3, 7), 3, 7);
+        chessBoard.setPiece(new King(whitePlayer, 4, 7), 4, 7);
+        chessBoard.setPiece(new Bishop(whitePlayer, 5, 7), 5, 7);
+        chessBoard.setPiece(new Knight(whitePlayer, 6, 7), 6, 7);
+        chessBoard.setPiece(new Rook(whitePlayer, 7, 7), 7, 7);
         for(int i = 0; i < 8; i++){
             blackPlayer.addPiece(chessBoard.getPiece(i, 0));
         }
@@ -205,8 +204,11 @@ public class Game {
         for(int i = 0; i < 8; i++){
             whitePlayer.addPiece(chessBoard.getPiece(i, 7));
         }
+        blackPlayer.setKing(chessBoard.getPiece(4, 0));
+        whitePlayer.setKing(chessBoard.getPiece(4, 7));
 
         whitePlayer.setIsTurn(true);
+        chessBoard.displayBoard();
     }
 
 }

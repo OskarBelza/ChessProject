@@ -72,6 +72,10 @@ public class Game {
                     gameOn = false;
                 }
             }
+            else if (chessBoard.isCheckMate(otherPlayer)) {
+                System.out.println("Stalemate.");
+                gameOn = false;
+            }
             switchTurns();
         }
     }

@@ -1,13 +1,13 @@
 import java.util.Objects;
 
 public class Move {
-    private int xTarget;
-    private int yTarget;
-    private int xStart;
-    private int yStart;
+    private final int xTarget;
+    private final int yTarget;
+    private final int xStart;
+    private final int yStart;
     private Piece piece;
-    private boolean isCapture;
-    private Piece capturedPiece;
+    private final boolean isCapture;
+    private final Piece capturedPiece;
     private boolean isCastle;
     private Piece castledRook;
     public Move(int xTarget, int yTarget, Piece piece, boolean isCapture, Piece capturedPiece) {
@@ -54,9 +54,6 @@ public class Move {
     }
     public void setPiece(Piece piece) {
         this.piece = piece;
-    }
-    public void setIsCapture(boolean isCapture) {
-        this.isCapture = isCapture;
     }
     public Piece getCapturedPiece() {
         return capturedPiece;

@@ -1,7 +1,7 @@
 import java.util.*;
 
 public class Game {
-    private ChessBoard chessBoard;
+    private final ChessBoard chessBoard;
     private Player blackPlayer;
     private Player whitePlayer;
     private Player currentPlayer;
@@ -17,67 +17,101 @@ public class Game {
 
         while (gameOn) {
             setCurrentPlayer();
-            Piece pieceToMove;
 
-            do{
-                System.out.println("Enter the x coordinate of the piece you want to move: ");
-                int xStart = scanner.nextInt();
-                System.out.println("Enter the y coordinate of the piece you want to move: ");
-                int yStart = scanner.nextInt();;
+            Piece pieceToMove = choosePieceToMove();
+            chooseWhereToMove(pieceToMove);
 
-                if(validPiece(xStart, yStart)){
-                    pieceToMove = chessBoard.getPiece(xStart, yStart);
-                    break;
-                }
-            }while(true);
-
-            do{
-                System.out.println("Enter the x coordinate where you want to move: ");
-                int xEnd = scanner.nextInt();
-                System.out.println("Enter the y coordinate where you want to move: ");
-                int yEnd = scanner.nextInt();
-
-                if (chessBoard.outOfBounds(xEnd, yEnd)) {
-                    System.out.println("That is not a valid location.");
-                    continue;
-                }
-
-                boolean isCapture = chessBoard.getPiece(xEnd, yEnd) != null;
-                Piece capturedPiece = chessBoard.getPiece(xEnd, yEnd);
-                Move newMove = new Move(xEnd, yEnd, pieceToMove, isCapture, capturedPiece);
-                List<Move> legalMoves = pieceToMove.getLegalMoves(chessBoard);
-
-                if(legalMoves.contains(newMove)){
-                    int id = legalMoves.indexOf(newMove);
-                    chessBoard.movePiece(legalMoves.get(id));
-                    if (chessBoard.isCheck(currentPlayer)){
-                        chessBoard.undoMovePiece();
-                        System.out.println("That move puts you in check.");
-                    }
-                    else {
-                        break;
-                    }
-                }
-                else{
-                    System.out.println("That is not a legal move.");
-                }
-
-            }while(true);
             pieceToMove.setHasMoved(true);
-            chessBoard.displayBoard();
+            if (pieceToMove instanceof Pawn && (pieceToMove.getY() == 7 || pieceToMove.getY() == 0)) {
+                PawnPromotion(pieceToMove);
+            }
 
-            if (chessBoard.spotAttacked(otherPlayer.getKing().getX(), otherPlayer.getKing().getY(), otherPlayer)) {
-                if (chessBoard.isCheckMate(otherPlayer)) {
-                    System.out.println("Checkmate.");
-                    gameOn = false;
-                }
-            }
-            else if (chessBoard.isCheckMate(otherPlayer)) {
-                System.out.println("Stalemate.");
-                gameOn = false;
-            }
+            chessBoard.displayBoard();
+            gameOn = gameOverCondition();
+
             switchTurns();
         }
+    }
+    public Piece choosePieceToMove(){
+        Piece pieceToMove;
+        do{
+            System.out.print("Enter the x coordinate of the piece you want to move: ");
+            int xStart = scanner.nextInt();
+            System.out.print("Enter the y coordinate of the piece you want to move: ");
+            int yStart = scanner.nextInt();;
+
+            if(validPiece(xStart, yStart)){
+                pieceToMove = chessBoard.getPiece(xStart, yStart);
+                return pieceToMove;
+            }
+        }while(true);
+    }
+    public void chooseWhereToMove(Piece pieceToMove){
+        do{
+            System.out.print("Enter the x coordinate where you want to move: ");
+            int xEnd = scanner.nextInt();
+            System.out.print("Enter the y coordinate where you want to move: ");
+            int yEnd = scanner.nextInt();
+
+            if (chessBoard.outOfBounds(xEnd, yEnd)) {
+                System.out.println("That is not a valid location.");
+                continue;
+            }
+
+            boolean isCapture = chessBoard.getPiece(xEnd, yEnd) != null;
+            Piece capturedPiece = chessBoard.getPiece(xEnd, yEnd);
+            Move newMove = new Move(xEnd, yEnd, pieceToMove, isCapture, capturedPiece);
+            List<Move> legalMoves = pieceToMove.getLegalMoves(chessBoard);
+
+            if(legalMoves.contains(newMove)){
+                int id = legalMoves.indexOf(newMove);
+                chessBoard.movePiece(legalMoves.get(id));
+                if (chessBoard.isCheck(currentPlayer)){
+                    chessBoard.undoMovePiece();
+                    System.out.println("That move puts you in check.");
+                    pieceToMove = choosePieceToMove();
+                }
+                else {
+                    break;
+                }
+            }
+            else{
+                System.out.println("That is not a legal move.");
+            }
+
+        }while(true);
+    }
+    public void PawnPromotion(Piece pieceToMove){
+        System.out.println("Your pawn has reached the end of the board. Enter the piece you want to promote to.");
+        System.out.println("1. Queen");
+        System.out.println("2. Rook");
+        System.out.println("3. Bishop");
+        System.out.println("4. Knight");
+        int choice = scanner.nextInt();
+        switch (choice) {
+            case 1 -> chessBoard.setPiece(new Queen(currentPlayer, pieceToMove.getX(), pieceToMove.getY()));
+            case 2 -> chessBoard.setPiece(new Rook(currentPlayer, pieceToMove.getX(), pieceToMove.getY()));
+            case 3 -> chessBoard.setPiece(new Bishop(currentPlayer, pieceToMove.getX(), pieceToMove.getY()));
+            case 4 -> chessBoard.setPiece(new Knight(currentPlayer, pieceToMove.getX(), pieceToMove.getY()));
+        }
+        chessBoard.getPiece(pieceToMove.getX(), pieceToMove.getY()).setHasMoved(true);
+        currentPlayer.addPiece(chessBoard.getPiece(pieceToMove.getX(), pieceToMove.getY()));
+        otherPlayer.addEnemyPiece(chessBoard.getPiece(pieceToMove.getX(), pieceToMove.getY()));
+        currentPlayer.getPiecesAlive().remove(pieceToMove);
+        otherPlayer.getEnemyPiecesAlive().remove(pieceToMove);
+    }
+    public boolean gameOverCondition(){
+        if (chessBoard.spotAttacked(otherPlayer.getKing().getX(), otherPlayer.getKing().getY(), otherPlayer)) {
+            if (chessBoard.isCheckMate(otherPlayer)) {
+                System.out.println("Checkmate, " + currentPlayer.getColor() + " wins!");
+                return false;
+            }
+        }
+        else if (chessBoard.isCheckMate(otherPlayer)) {
+            System.out.println("Stalemate.");
+            return false;
+        }
+        return true;
     }
     public void setCurrentPlayer() {
         if (blackPlayer.getIsTurn()) {
@@ -125,28 +159,28 @@ public class Game {
     public void initializeGame(){
         blackPlayer = new Player("Black");
         whitePlayer = new Player("White");
-        chessBoard.setPiece(new Rook(blackPlayer, 0, 0), 0, 0);
-        chessBoard.setPiece(new Knight(blackPlayer,1, 0), 1, 0);
-        chessBoard.setPiece(new Bishop(blackPlayer, 2, 0), 2, 0);
-        chessBoard.setPiece(new Queen(blackPlayer, 3, 0), 3, 0);
-        chessBoard.setPiece(new King(blackPlayer, 4, 0), 4, 0);
-        chessBoard.setPiece(new Bishop(blackPlayer, 5, 0), 5, 0);
-        chessBoard.setPiece(new Knight(blackPlayer, 6, 0), 6, 0);
-        chessBoard.setPiece(new Rook(blackPlayer, 7, 0), 7, 0);
+        chessBoard.setPiece(new Rook(blackPlayer, 0, 0));
+        chessBoard.setPiece(new Knight(blackPlayer,1, 0));
+        chessBoard.setPiece(new Bishop(blackPlayer, 2, 0));
+        chessBoard.setPiece(new Queen(blackPlayer, 3, 0));
+        chessBoard.setPiece(new King(blackPlayer, 4, 0));
+        chessBoard.setPiece(new Bishop(blackPlayer, 5, 0));
+        chessBoard.setPiece(new Knight(blackPlayer, 6, 0));
+        chessBoard.setPiece(new Rook(blackPlayer, 7, 0));
         for(int i = 0; i < 8; i++){
-            chessBoard.setPiece(new Pawn(blackPlayer, i, 1), i, 1);
+            chessBoard.setPiece(new Pawn(blackPlayer, i, 1));
         }
         for(int i = 0; i < 8; i++){
-            chessBoard.setPiece(new Pawn(whitePlayer, i, 6), i, 6);
+            chessBoard.setPiece(new Pawn(whitePlayer, i, 6));
         }
-        chessBoard.setPiece(new Rook(whitePlayer, 0, 7), 0, 7);
-        chessBoard.setPiece(new Knight(whitePlayer, 1, 7), 1, 7);
-        chessBoard.setPiece(new Bishop(whitePlayer, 2, 7), 2, 7);
-        chessBoard.setPiece(new Queen(whitePlayer, 3, 7), 3, 7);
-        chessBoard.setPiece(new King(whitePlayer, 4, 7), 4, 7);
-        chessBoard.setPiece(new Bishop(whitePlayer, 5, 7), 5, 7);
-        chessBoard.setPiece(new Knight(whitePlayer, 6, 7), 6, 7);
-        chessBoard.setPiece(new Rook(whitePlayer, 7, 7), 7, 7);
+        chessBoard.setPiece(new Rook(whitePlayer, 0, 7));
+        chessBoard.setPiece(new Knight(whitePlayer, 1, 7));
+        chessBoard.setPiece(new Bishop(whitePlayer, 2, 7));
+        chessBoard.setPiece(new Queen(whitePlayer, 3, 7));
+        chessBoard.setPiece(new King(whitePlayer, 4, 7));
+        chessBoard.setPiece(new Bishop(whitePlayer, 5, 7));
+        chessBoard.setPiece(new Knight(whitePlayer, 6, 7));
+        chessBoard.setPiece(new Rook(whitePlayer, 7, 7));
         for(int i = 0; i < 8; i++){
             blackPlayer.addPiece(chessBoard.getPiece(i, 0));
             whitePlayer.addEnemyPiece(chessBoard.getPiece(i, 0));
@@ -169,5 +203,4 @@ public class Game {
         whitePlayer.setIsTurn(true);
         chessBoard.displayBoard();
     }
-
 }

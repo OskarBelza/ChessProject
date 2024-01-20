@@ -1,10 +1,10 @@
 import java.util.LinkedList;
 
 public class Player {
-    private String color;
+    private final String color;
     private boolean isTurn;
-    private LinkedList<Piece> pieces;
-    private LinkedList<Piece> enemyPieces;
+    private final LinkedList<Piece> pieces;
+    private final LinkedList<Piece> enemyPieces;
     private Piece king;
     public Player(String color) {
         this.color = color;
@@ -27,9 +27,6 @@ public class Player {
     }
     public void addEnemyPiece(Piece piece) {
         enemyPieces.add(piece);
-    }
-    public void removePiece(Piece piece) {
-        pieces.remove(piece);
     }
     public LinkedList<Piece> getPiecesAlive() {
         LinkedList<Piece> piecesAlive = new LinkedList<Piece>();

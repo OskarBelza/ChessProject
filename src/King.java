@@ -30,7 +30,7 @@ public class King extends Piece{
         return moves;
     }
     public boolean leftCastle(ChessBoard chessBoard) {
-        if (chessBoard.getPiece(0, this.y) instanceof Rook && !chessBoard.getPiece(0, y).getHasMoved()){
+        if (chessBoard.getPiece(0, this.y) instanceof Rook && chessBoard.getPiece(0, y).getHasNotMoved()){
             for (int i = 0; i < 4; i++) {
                 if (chessBoard.getPiece(i, this.y) == null) {
                     if(chessBoard.spotAttacked(i, this.y, this.getPlayer())){
@@ -49,7 +49,7 @@ public class King extends Piece{
 
     }
     public boolean rightCastle(ChessBoard chessBoard){
-        if (chessBoard.getPiece(7, this.y) instanceof Rook && !chessBoard.getPiece(7, y).getHasMoved()){
+        if (chessBoard.getPiece(7, this.y) instanceof Rook && chessBoard.getPiece(7, y).getHasNotMoved()){
             for (int i = 5; i < 7; i++) {
                 if (chessBoard.getPiece(i, this.y) == null) {
                     if(chessBoard.spotAttacked(i, this.y, this.getPlayer())){

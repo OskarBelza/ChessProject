@@ -7,8 +7,8 @@ public class ChessBoard {
         chessBoard = new Piece[8][8];
         moveHistory = new Stack<>();
     }
-    public void setPiece(Piece piece, int x, int y) {
-        chessBoard[x][y] = piece;
+    public void setPiece(Piece piece) {
+        chessBoard[piece.getX()][piece.getY()] = piece;
     }
     public Piece getPiece(int x, int y) {
         return chessBoard[x][y];
@@ -142,5 +142,4 @@ public class ChessBoard {
             System.out.println();
         }
     }
-
 }

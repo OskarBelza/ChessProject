@@ -13,8 +13,8 @@ public class Piece {
         isAlive = true;
         hasMoved = false;
     }
-    public boolean getHasMoved() {
-        return hasMoved;
+    public boolean getHasNotMoved() {
+        return !hasMoved;
     }
     public void setHasMoved(boolean hasMoved) {
         this.hasMoved = hasMoved;
@@ -40,14 +40,11 @@ public class Piece {
     public boolean getIsAlive() {
         return isAlive;
     }
-    public void setIsAlive(boolean isAlive) {
-        this.isAlive = isAlive;
-    }
     public void capture() {
-        this.setIsAlive(false);
+        this.isAlive = false;
     }
     public void unCapture() {
-        this.setIsAlive(true);
+        this.isAlive = true;;
     }
     public List<Move> getDiagonalMoves(ChessBoard chessBoard) {
         List<Move> moves = new ArrayList<>();

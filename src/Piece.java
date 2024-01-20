@@ -19,6 +19,9 @@ public class Piece {
     public void setHasMoved(boolean hasMoved) {
         this.hasMoved = hasMoved;
     }
+    public Player getPlayer() {
+        return player;
+    }
     public String getColor() {
         return player.getColor();
     }

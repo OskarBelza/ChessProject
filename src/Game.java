@@ -5,6 +5,7 @@ public class Game {
     private Player blackPlayer;
     private Player whitePlayer;
     private Player currentPlayer;
+    private Player otherPlayer;
     private boolean gameOn = true;
     Scanner scanner = new Scanner(System.in);
     public Game() {
@@ -17,7 +18,6 @@ public class Game {
         while (gameOn) {
             setCurrentPlayer();
             Piece pieceToMove;
-            Move newMove = null;
 
             do{
                 System.out.println("Enter the x coordinate of the piece you want to move: ");
@@ -44,13 +44,13 @@ public class Game {
 
                 boolean isCapture = chessBoard.getPiece(xEnd, yEnd) != null;
                 Piece capturedPiece = chessBoard.getPiece(xEnd, yEnd);
-                newMove = new Move(xEnd, yEnd, pieceToMove, isCapture, capturedPiece);
+                Move newMove = new Move(xEnd, yEnd, pieceToMove, isCapture, capturedPiece);
                 List<Move> legalMoves = pieceToMove.getLegalMoves(chessBoard);
 
                 if(legalMoves.contains(newMove)){
                     int id = legalMoves.indexOf(newMove);
                     chessBoard.movePiece(legalMoves.get(id));
-                    if (isCheck(currentPlayer.getColor())){
+                    if (chessBoard.isCheck(currentPlayer)){
                         chessBoard.undoMovePiece();
                         System.out.println("That move puts you in check.");
                     }
@@ -63,16 +63,14 @@ public class Game {
                 }
 
             }while(true);
-            System.out.println(newMove.getIsCastle());
             pieceToMove.setHasMoved(true);
-            for(Move move : whitePlayer.getKing().getLegalMoves(chessBoard)){
-                move.printInfo();
-            }
             chessBoard.displayBoard();
 
-            if(isCheckMate(currentPlayer.getColor())){
-                System.out.println("Game over, checkmate " + currentPlayer.getColor() + " won");
-                gameOn = false;
+            if (chessBoard.spotAttacked(otherPlayer.getKing().getX(), otherPlayer.getKing().getY(), otherPlayer)) {
+                if (chessBoard.isCheckMate(otherPlayer)) {
+                    System.out.println("Checkmate.");
+                    gameOn = false;
+                }
             }
             switchTurns();
         }
@@ -80,61 +78,14 @@ public class Game {
     public void setCurrentPlayer() {
         if (blackPlayer.getIsTurn()) {
             currentPlayer = blackPlayer;
+            otherPlayer = whitePlayer;
             System.out.println("Black's turn.");
         }
         else {
             currentPlayer = whitePlayer;
+            otherPlayer = blackPlayer;
             System.out.println("White's turn.");
         }
-    }
-    public boolean isCheck(String color){
-        if (Objects.equals(color, "Black")){
-            int blackPlayerX = blackPlayer.getKing().getX();
-            int blackPlayerY = blackPlayer.getKing().getY();
-            for (Piece piece : whitePlayer.getPiecesAlive()) {
-                if (piece.getLegalMoves(chessBoard).contains(new Move(blackPlayerX, blackPlayerY, piece, true, blackPlayer.getKing()))) {
-                    return true;
-                }
-            }
-        }
-        else {
-            int whitePlayerX = whitePlayer.getKing().getX();
-            int whitePlayerY = whitePlayer.getKing().getY();
-            for (Piece piece : blackPlayer.getPiecesAlive()) {
-                if (piece.getLegalMoves(chessBoard).contains(new Move(whitePlayerX, whitePlayerY, piece, true, whitePlayer.getKing()))) {
-                    return true;
-                }
-            }
-        }
-        return false;
-    }
-    public boolean isCheckMate(String color){
-        if (Objects.equals(color, "White")){
-            for (Piece piece : blackPlayer.getPiecesAlive()) {
-                for (Move move : piece.getLegalMoves(chessBoard)) {
-                    chessBoard.movePiece(move);
-                    if (!isCheck("Black")) {
-                        chessBoard.undoMovePiece();
-                        return false;
-                    }
-                    chessBoard.undoMovePiece();
-                }
-            }
-        }
-        else {
-            for (Piece piece : whitePlayer.getPiecesAlive()) {
-                for (Move move : piece.getLegalMoves(chessBoard)) {
-                    chessBoard.movePiece(move);
-                    if (!isCheck("White")) {
-                        move.printInfo();
-                        chessBoard.undoMovePiece();
-                        return false;
-                    }
-                    chessBoard.undoMovePiece();
-                }
-            }
-        }
-        return true;
     }
     public boolean validPiece(int x, int y){
         if (chessBoard.outOfBounds(x, y)) {
@@ -194,15 +145,19 @@ public class Game {
         chessBoard.setPiece(new Rook(whitePlayer, 7, 7), 7, 7);
         for(int i = 0; i < 8; i++){
             blackPlayer.addPiece(chessBoard.getPiece(i, 0));
+            whitePlayer.addEnemyPiece(chessBoard.getPiece(i, 0));
         }
         for(int i = 0; i < 8; i++){
             blackPlayer.addPiece(chessBoard.getPiece(i, 1));
+            whitePlayer.addEnemyPiece(chessBoard.getPiece(i, 1));
         }
         for(int i = 0; i < 8; i++){
             whitePlayer.addPiece(chessBoard.getPiece(i, 6));
+            blackPlayer.addEnemyPiece(chessBoard.getPiece(i, 6));
         }
         for(int i = 0; i < 8; i++){
             whitePlayer.addPiece(chessBoard.getPiece(i, 7));
+            blackPlayer.addEnemyPiece(chessBoard.getPiece(i, 7));
         }
         blackPlayer.setKing(chessBoard.getPiece(4, 0));
         whitePlayer.setKing(chessBoard.getPiece(4, 7));

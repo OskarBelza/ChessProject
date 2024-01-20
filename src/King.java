@@ -32,7 +32,12 @@ public class King extends Piece{
     public boolean leftCastle(ChessBoard chessBoard) {
         if (chessBoard.getPiece(0, this.y) instanceof Rook && !chessBoard.getPiece(0, y).getHasMoved()){
             for (int i = 0; i < 4; i++) {
-                if (!castleValidSpot(chessBoard, i, this.y)) {
+                if (chessBoard.getPiece(i, this.y) == null) {
+                    if(chessBoard.spotAttacked(i, this.y, this.getPlayer())){
+                        return false;
+                    }
+                }
+                else {
                     return false;
                 }
             }
@@ -46,7 +51,12 @@ public class King extends Piece{
     public boolean rightCastle(ChessBoard chessBoard){
         if (chessBoard.getPiece(7, this.y) instanceof Rook && !chessBoard.getPiece(7, y).getHasMoved()){
             for (int i = 5; i < 7; i++) {
-                if (!castleValidSpot(chessBoard, i, this.y)) {
+                if (chessBoard.getPiece(i, this.y) == null) {
+                    if(chessBoard.spotAttacked(i, this.y, this.getPlayer())){
+                        return false;
+                    }
+                }
+                else {
                     return false;
                 }
             }
@@ -55,19 +65,6 @@ public class King extends Piece{
         else {
             return false;
         }
-    }
-    public boolean castleValidSpot(ChessBoard chessBoard, int x, int y){
-        if(chessBoard.getPiece(x, y) == null){
-            for (Piece piece : this.player.getEnemyPiecesAlive()) {
-                if (!(piece instanceof King)){
-                    if (piece.getLegalMoves(chessBoard).contains(new Move(x, y, piece, false, null))) {
-                        return false;
-                    }
-                }
-            }
-            return true;
-        }
-        return false;
     }
 
 }

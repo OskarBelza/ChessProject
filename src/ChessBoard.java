@@ -27,6 +27,7 @@ public class ChessBoard {
         else{
             if(move.getIsCapture()){
                 move.getCapturedPiece().capture();
+                chessBoard[move.getCapturedPiece().getX()][move.getCapturedPiece().getY()] = null;
             }
             chessBoard[move.getxStart()][move.getyStart()] = null;
             chessBoard[move.getxTarget()][move.getyTarget()] = move.getPiece();
@@ -48,7 +49,7 @@ public class ChessBoard {
             } else {
                 if (move.getIsCapture()) {
                     move.getCapturedPiece().unCapture();
-                    chessBoard[move.getxTarget()][move.getyTarget()] = move.getCapturedPiece();
+                    chessBoard[move.getCapturedPiece().getX()][move.getCapturedPiece().getY()] = move.getCapturedPiece();
                 } else {
                     chessBoard[move.getxTarget()][move.getyTarget()] = null;
                 }
@@ -57,6 +58,34 @@ public class ChessBoard {
                 move.getPiece().setY(move.getyStart());
             }
         }
+    }
+    public boolean spotAttacked(int x, int y, Player player){
+        Piece pieceUnderAttack = this.getPiece(x, y);
+        boolean captured = pieceUnderAttack != null;
+        for(Piece piece : player.getEnemyPiecesAlive()){
+            if (!(piece instanceof King)){
+                if (piece.getLegalMoves(this).contains(new Move(x, y, piece, captured, pieceUnderAttack))){
+                    return true;
+                }
+            }
+        }
+        return false;
+    }
+    public boolean isCheck(Player player){
+        return this.spotAttacked(player.getKing().getX(), player.getKing().getY(), player);
+    }
+    public boolean isCheckMate(Player player){
+        for (Piece piece : player.getPiecesAlive()) {
+            for (Move move : piece.getLegalMoves(this)) {
+                this.movePiece(move);
+                if (!isCheck(player)) {
+                    this.undoMovePiece();
+                    return false;
+                }
+                this.undoMovePiece();
+            }
+        }
+        return true;
     }
     public boolean outOfBounds(int x, int y){
         return x < 0 || x > 7 || y < 0 || y > 7;

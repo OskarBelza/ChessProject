@@ -108,18 +108,19 @@ public class Game {
         otherPlayer.getEnemyPiecesAlive().remove(pieceToMove);
     }
     public boolean gameOverCondition(){
-        if (chessBoard.spotAttacked(otherPlayer.getKing().getX(), otherPlayer.getKing().getY(), otherPlayer)) {
-            if (chessBoard.isCheckMate(otherPlayer)) {
-                System.out.println("Checkmate, " + currentPlayer.getColor() + " wins!");
-                return true;
-            }
-        }
-        else if (chessBoard.isCheckMate(otherPlayer)) {
+        boolean isOtherPlayerInCheck = chessBoard.isCheck(otherPlayer);
+        boolean isOtherPlayerCheckmated = chessBoard.isCheckMate(otherPlayer);
+
+        if (isOtherPlayerInCheck && isOtherPlayerCheckmated) {
+            System.out.println("Checkmate, " + currentPlayer.getColor() + " wins!");
+            return true;
+        } else if (!isOtherPlayerInCheck && isOtherPlayerCheckmated) {
             System.out.println("Stalemate.");
             return true;
         }
         return false;
     }
+
     public void setCurrentPlayer() {
         if (blackPlayer.getIsTurn()) {
             currentPlayer = blackPlayer;

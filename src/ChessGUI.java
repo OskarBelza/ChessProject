@@ -269,7 +269,6 @@ public class ChessGUI extends Application {
         }
         updateBoard(gridPane);
     }
-
     private Piece showPromotionDialog(Player player, int x, int y) {
         Dialog<ButtonType> dialog = new Dialog<>();
         dialog.setTitle("Pawn Promotion");
@@ -303,20 +302,22 @@ public class ChessGUI extends Application {
         moveHistoryArea.appendText(playerPrefix + notation + "\n");
     }
     private boolean checkGameOver() {
-        if (chessBoard.spotAttacked(game.getCurrentPlayer().getKing().getX(), game.getCurrentPlayer().getKing().getY(), game.getCurrentPlayer())) {
-            if (chessBoard.isCheckMate(game.getCurrentPlayer())) {
-                String message = "Checkmate, " + game.getOtherPlayer().getColor() + " wins!";
-                moveHistoryArea.appendText("\n" + message + "\n");
-                System.out.println(message);
-                return true;
-            }
-        } else if (chessBoard.isCheckMate(game.getOtherPlayer())) {
+        boolean isOtherPlayerInCheck = chessBoard.isCheck(game.getOtherPlayer());
+        boolean isOtherPlayerCheckmated = chessBoard.isCheckMate(game.getOtherPlayer());
+
+        if (isOtherPlayerInCheck && isOtherPlayerCheckmated) {
+            String message = "Checkmate, " + game.getCurrentPlayer().getColor() + " wins!";
+            moveHistoryArea.appendText("\n" + message + "\n");
+            System.out.println(message);
+            return true;
+        } else if (!isOtherPlayerInCheck && isOtherPlayerCheckmated) {
             moveHistoryArea.appendText("\nStalemate.\n");
             System.out.println("Stalemate.");
             return true;
         }
         return false;
     }
+
     private String getPieceImage(Piece piece) {
         return switch (piece.getClass().getSimpleName()) {
             case "Pawn" -> piece.getColor().equals("Black") ? "black_pawn" : "white_pawn";

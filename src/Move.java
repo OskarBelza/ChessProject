@@ -73,4 +73,32 @@ public class Move {
     public int hashCode() {
         return Objects.hash(xTarget, yTarget);
     }
+
+    public String getChessNotation() {
+        StringBuilder notation = new StringBuilder();
+
+        if (isCastle) {
+            return (xTarget == 6) ? "O-O" : "O-O-O";
+        }
+
+        String pieceSymbol = "";
+        if (!(piece instanceof Pawn)) {
+            pieceSymbol = piece.getClass().getSimpleName().substring(0, 1);
+        }
+
+        String captureSymbol = isCapture ? "x" : "";
+
+        String targetSquare = getSquareNotation(xTarget, yTarget);
+
+        notation.append(pieceSymbol).append(captureSymbol).append(targetSquare);
+
+        return notation.toString();
+    }
+
+    private String getSquareNotation(int x, int y) {
+        char file = (char) ('a' + x);
+        int rank = 8 - y;
+        return "" + file + rank;
+    }
+
 }

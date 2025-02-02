@@ -14,38 +14,59 @@ public class ChessBoard {
         return chessBoard[x][y];
     }
     public void movePiece(Move move) {
-        if(move.getIsCastle())
-        {
-            chessBoard[move.getxStart()][move.getyStart()] = move.getCastledRook();
-            chessBoard[move.getxTarget()][move.getyTarget()] = move.getPiece();
-            move.getPiece().setX(move.getxTarget());
+        if (move.getIsCastle()) {
+            int kingTargetX = move.getxTarget();
+            int rookStartX = (kingTargetX == 6) ? 7 : 0;
+            int rookTargetX = (kingTargetX == 6) ? 5 : 3;
+
+            chessBoard[move.getxStart()][move.getyStart()] = null;
+            chessBoard[kingTargetX][move.getyTarget()] = move.getPiece();
+            move.getPiece().setX(kingTargetX);
             move.getPiece().setY(move.getyTarget());
-            move.getCastledRook().setX(move.getxStart());
-            move.getCastledRook().setY(move.getyStart());
+            move.getPiece().setHasMoved(true);
+
+            chessBoard[rookStartX][move.getyTarget()] = null;
+            chessBoard[rookTargetX][move.getyTarget()] = move.getCastledRook();
+            move.getCastledRook().setX(rookTargetX);
+            move.getCastledRook().setY(move.getyTarget());
+            move.getCastledRook().setHasMoved(true);
+
             moveHistory.push(move);
-        }
-        else{
-            if(move.getIsCapture()){
+        } else {
+            if (move.getIsCapture()) {
                 move.getCapturedPiece().capture();
                 chessBoard[move.getCapturedPiece().getX()][move.getCapturedPiece().getY()] = null;
             }
+
             chessBoard[move.getxStart()][move.getyStart()] = null;
             chessBoard[move.getxTarget()][move.getyTarget()] = move.getPiece();
             move.getPiece().setX(move.getxTarget());
             move.getPiece().setY(move.getyTarget());
+            move.getPiece().setHasMoved(true);
+
             moveHistory.push(move);
         }
     }
     public void undoMovePiece() {
-        if(!moveHistory.isEmpty()) {
+        if (!moveHistory.isEmpty()) {
             Move move = moveHistory.pop();
+
             if (move.getIsCastle()) {
+                int kingTargetX = move.getxTarget();
+                int rookStartX = (kingTargetX == 6) ? 7 : 0;
+                int rookTargetX = (kingTargetX == 6) ? 5 : 3;
+
+                chessBoard[kingTargetX][move.getyTarget()] = null;
                 chessBoard[move.getxStart()][move.getyStart()] = move.getPiece();
-                chessBoard[move.getxTarget()][move.getyTarget()] = move.getCastledRook();
                 move.getPiece().setX(move.getxStart());
                 move.getPiece().setY(move.getyStart());
-                move.getCastledRook().setX(move.getxTarget());
+                move.getPiece().setHasMoved(false);
+
+                chessBoard[rookTargetX][move.getyTarget()] = null;
+                chessBoard[rookStartX][move.getyTarget()] = move.getCastledRook();
+                move.getCastledRook().setX(rookStartX);
                 move.getCastledRook().setY(move.getyTarget());
+                move.getCastledRook().setHasMoved(false);
             } else {
                 if (move.getIsCapture()) {
                     move.getCapturedPiece().unCapture();
@@ -53,6 +74,7 @@ public class ChessBoard {
                 } else {
                     chessBoard[move.getxTarget()][move.getyTarget()] = null;
                 }
+
                 chessBoard[move.getxStart()][move.getyStart()] = move.getPiece();
                 move.getPiece().setX(move.getxStart());
                 move.getPiece().setY(move.getyStart());

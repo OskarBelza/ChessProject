@@ -5,7 +5,7 @@ public class Piece {
     protected int x;
     protected int y;
     protected boolean isAlive;
-    protected boolean hasMoved;
+    protected boolean hasMoved = false;
     public Piece(Player player, int x, int y) {
         this.player = player;
         this.x = x;
@@ -13,8 +13,8 @@ public class Piece {
         isAlive = true;
         hasMoved = false;
     }
-    public boolean getHasNotMoved() {
-        return !hasMoved;
+    public boolean hasMoved() {
+        return hasMoved;
     }
     public void setHasMoved(boolean hasMoved) {
         this.hasMoved = hasMoved;

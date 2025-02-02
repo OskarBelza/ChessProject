@@ -10,7 +10,8 @@ public class Game {
     Scanner scanner = new Scanner(System.in);
     public Game() {
         chessBoard = new ChessBoard();
-        gameLoop();
+        initializeGame();
+        //gameLoop();
     }
     public void gameLoop() {
         initializeGame();;
@@ -87,16 +88,22 @@ public class Game {
         System.out.println("2. Rook");
         System.out.println("3. Bishop");
         System.out.println("4. Knight");
+        Scanner scanner = new Scanner(System.in);
         int choice = scanner.nextInt();
-        switch (choice) {
-            case 1 -> chessBoard.setPiece(new Queen(currentPlayer, pieceToMove.getX(), pieceToMove.getY()));
-            case 2 -> chessBoard.setPiece(new Rook(currentPlayer, pieceToMove.getX(), pieceToMove.getY()));
-            case 3 -> chessBoard.setPiece(new Bishop(currentPlayer, pieceToMove.getX(), pieceToMove.getY()));
-            case 4 -> chessBoard.setPiece(new Knight(currentPlayer, pieceToMove.getX(), pieceToMove.getY()));
-        }
-        chessBoard.getPiece(pieceToMove.getX(), pieceToMove.getY()).setHasMoved(true);
-        currentPlayer.addPiece(chessBoard.getPiece(pieceToMove.getX(), pieceToMove.getY()));
-        otherPlayer.addEnemyPiece(chessBoard.getPiece(pieceToMove.getX(), pieceToMove.getY()));
+
+        Piece newPiece = switch (choice) {
+            case 1 -> new Queen(currentPlayer, pieceToMove.getX(), pieceToMove.getY());
+            case 2 -> new Rook(currentPlayer, pieceToMove.getX(), pieceToMove.getY());
+            case 3 -> new Bishop(currentPlayer, pieceToMove.getX(), pieceToMove.getY());
+            case 4 -> new Knight(currentPlayer, pieceToMove.getX(), pieceToMove.getY());
+            default -> new Queen(currentPlayer, pieceToMove.getX(), pieceToMove.getY()); // Domyślnie wybieramy królową
+        };
+
+        chessBoard.setPiece(newPiece);
+        newPiece.setHasMoved(true);
+        currentPlayer.addPiece(newPiece);
+        otherPlayer.addEnemyPiece(newPiece);
+
         currentPlayer.getPiecesAlive().remove(pieceToMove);
         otherPlayer.getEnemyPiecesAlive().remove(pieceToMove);
     }
@@ -104,14 +111,14 @@ public class Game {
         if (chessBoard.spotAttacked(otherPlayer.getKing().getX(), otherPlayer.getKing().getY(), otherPlayer)) {
             if (chessBoard.isCheckMate(otherPlayer)) {
                 System.out.println("Checkmate, " + currentPlayer.getColor() + " wins!");
-                return false;
+                return true;
             }
         }
         else if (chessBoard.isCheckMate(otherPlayer)) {
             System.out.println("Stalemate.");
-            return false;
+            return true;
         }
-        return true;
+        return false;
     }
     public void setCurrentPlayer() {
         if (blackPlayer.getIsTurn()) {
@@ -147,15 +154,20 @@ public class Game {
         }
     }
     public void switchTurns(){
-        if (blackPlayer.getIsTurn()) {
+        if (currentPlayer == whitePlayer) {
+            whitePlayer.setIsTurn(false);
+            blackPlayer.setIsTurn(true);
+            currentPlayer = blackPlayer;
+            otherPlayer = whitePlayer;
+        } else {
             blackPlayer.setIsTurn(false);
             whitePlayer.setIsTurn(true);
+            currentPlayer = whitePlayer;
+            otherPlayer = blackPlayer;
         }
-        else {
-            blackPlayer.setIsTurn(true);
-            whitePlayer.setIsTurn(false);
-        }
+        //System.out.println("Teraz ruch ma: " + currentPlayer.getColor());
     }
+
     public void initializeGame(){
         blackPlayer = new Player("Black");
         whitePlayer = new Player("White");
@@ -201,6 +213,22 @@ public class Game {
         whitePlayer.setKing(chessBoard.getPiece(4, 7));
 
         whitePlayer.setIsTurn(true);
-        chessBoard.displayBoard();
+        //chessBoard.displayBoard();
+
+        currentPlayer = whitePlayer;
+        otherPlayer = blackPlayer;
     }
+
+    public ChessBoard getChessBoard() {
+        return chessBoard;
+    }
+
+    public Player getCurrentPlayer() {
+        return currentPlayer;
+    }
+
+    public Player getOtherPlayer(){
+        return otherPlayer;
+    }
+
 }

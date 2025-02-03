@@ -47,7 +47,7 @@ The project consists of several key classes:
 1. Open a terminal or command prompt.
 2. Run the following command to clone the repository:
    ```sh
-   git clone https://github.com/YourRepository/ChessGame.git
+   git clone https://github.com/OskarBelza/ChessProject
    ```
 3. Navigate to the cloned directory:
    ```sh

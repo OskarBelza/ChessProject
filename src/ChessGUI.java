@@ -40,6 +40,8 @@ public class ChessGUI extends Application {
     private Timer timer;
     private boolean isWhiteTurn = true; // Tracks turn order
     private static final Map<String, Image> pieceImages = new HashMap<>();
+    private Timeline timeline;
+
 
     /**
      * Initializes the GUI and starts the game.
@@ -72,7 +74,11 @@ public class ChessGUI extends Application {
      * Updates the displayed time and ends the game if time runs out.
      */
     private void startTimer() {
-        Timeline timeline = new Timeline(new KeyFrame(Duration.seconds(1), event -> {
+        if (timeline != null) {
+            timeline.stop();
+        }
+
+        timeline = new Timeline(new KeyFrame(Duration.seconds(1), event -> {
             if (isWhiteTurn) {
                 whiteTime--;
                 whiteTimerLabel.setText("White: " + whiteTime + "s");
@@ -83,11 +89,15 @@ public class ChessGUI extends Application {
             if (whiteTime == 0 || blackTime == 0) {
                 gameOver = true;
                 moveHistoryArea.appendText("Game over! " + (whiteTime == 0 ? "Black wins!" : "White wins!") + "\n");
+                timeline.stop();
             }
         }));
+
         timeline.setCycleCount(Animation.INDEFINITE);
         timeline.play();
     }
+
+
 
     /**
      * Creates the side panel with move history, timers, and control buttons.
@@ -154,15 +164,20 @@ public class ChessGUI extends Application {
         whiteTime = 300;
         blackTime = 300;
         isWhiteTurn = true;
-        if (timer != null) {
-            timer.cancel();
+
+        if (timeline != null) {
+            timeline.stop();
         }
+
         whiteTimerLabel.setText("White: 300s");
         blackTimerLabel.setText("Black: 300s");
+
         startTimer();
         updateBoard((GridPane) root.getCenter());
-        moveHistoryArea.clear(); // Clear move history
+        moveHistoryArea.clear();
+        System.out.println("New Game!");
     }
+
     /**
      * Updates the chessboard UI by clearing and re-rendering all tiles.
      * @param gridPane The JavaFX GridPane containing the chessboard.

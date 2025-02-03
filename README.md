@@ -59,7 +59,7 @@ The project consists of several key classes:
    ```
 
 ## Application Preview
-![Chess Game Screenshot](.\resources\Zrzut ekranu 2025-02-03 013914.png)
+![Chess Game Screenshot](./resources/Zrzut ekranu 2025-02-03 013914.png)
 
 ## Future Enhancements
 - AI-based opponent for single-player mode

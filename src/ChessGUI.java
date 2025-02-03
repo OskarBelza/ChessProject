@@ -18,35 +18,44 @@ import java.util.List;
 import java.util.Map;
 import java.util.Timer;
 
+/**
+ * Handles the graphical user interface for the chess game.
+ * Uses JavaFX to display the board, manage interactions, and update the game state.
+ */
 public class ChessGUI extends Application {
     private static final int TILE_SIZE = 80;
     private static final int BOARD_SIZE = 8;
-    private Button[][] tiles = new Button[BOARD_SIZE][BOARD_SIZE];
+    private Button[][] tiles = new Button[BOARD_SIZE][BOARD_SIZE]; // Grid buttons representing the board
     private Game game;
     private ChessBoard chessBoard;
     private Piece selectedPiece;
     private boolean gameOver = false;
-    private List<Move> highlightedMoves = null;
-    private BorderPane root;
-    private TextArea moveHistoryArea;
+    private List<Move> highlightedMoves = null; // Stores highlighted legal moves
+    private BorderPane root; // Main layout
+    private TextArea moveHistoryArea; // Move history display
     private Label whiteTimerLabel;
     private Label blackTimerLabel;
     private int whiteTime = 300; // 5 minutes per player
     private int blackTime = 300;
     private Timer timer;
-    private boolean isWhiteTurn = true;
+    private boolean isWhiteTurn = true; // Tracks turn order
     private static final Map<String, Image> pieceImages = new HashMap<>();
+
+    /**
+     * Initializes the GUI and starts the game.
+     * @param primaryStage The main JavaFX stage.
+     */
     @Override
     public void start(Stage primaryStage) {
-        loadPieceImages(); // Załaduj obrazy do pamięci
+        loadPieceImages(); // Load piece images into memory
         game = new Game();
         chessBoard = game.getChessBoard();
-        startTimer();
+        startTimer(); // Start countdown timer
 
         GridPane boardPane = new GridPane();
-        updateBoard(boardPane);
+        updateBoard(boardPane); // Render initial board state
 
-        VBox sidePanel = createSidePanel();
+        VBox sidePanel = createSidePanel(); // Sidebar with move history and controls
 
         root = new BorderPane();
         root.setCenter(boardPane);
@@ -57,6 +66,11 @@ public class ChessGUI extends Application {
         primaryStage.setScene(scene);
         primaryStage.show();
     }
+
+    /**
+     * Starts the chess game timer for both players.
+     * Updates the displayed time and ends the game if time runs out.
+     */
     private void startTimer() {
         Timeline timeline = new Timeline(new KeyFrame(Duration.seconds(1), event -> {
             if (isWhiteTurn) {
@@ -74,21 +88,19 @@ public class ChessGUI extends Application {
         timeline.setCycleCount(Animation.INDEFINITE);
         timeline.play();
     }
+
+    /**
+     * Creates the side panel with move history, timers, and control buttons.
+     * @return The VBox containing the side panel UI elements.
+     */
     private VBox createSidePanel() {
         VBox sidePanel = new VBox();
         sidePanel.setSpacing(10);
         sidePanel.setPrefWidth(200);
         sidePanel.setStyle("-fx-background-color: #333333; -fx-padding: 10px; -fx-border-color: black; -fx-border-width: 2px;");
 
-        // Upewnij się, że zmienne są poprawnie inicjalizowane
-        if (whiteTimerLabel == null) {
-            whiteTimerLabel = new Label("White: " + whiteTime + "s");
-        }
-        if (blackTimerLabel == null) {
-            blackTimerLabel = new Label("Black: " + blackTime + "s");
-        }
-
-        // Dopiero teraz ustawiamy styl
+        whiteTimerLabel = new Label("White: " + whiteTime + "s");
+        blackTimerLabel = new Label("Black: " + blackTime + "s");
         whiteTimerLabel.setStyle("-fx-text-fill: white; -fx-font-size: 16px;");
         blackTimerLabel.setStyle("-fx-text-fill: white; -fx-font-size: 16px;");
 
@@ -109,10 +121,17 @@ public class ChessGUI extends Application {
         sidePanel.getChildren().addAll(whiteTimerLabel, blackTimerLabel, moveHistoryArea, undoButton, newGameButton);
         return sidePanel;
     }
+
+    /**
+     * Switches turns between white and black players.
+     */
     private void switchTurns() {
         isWhiteTurn = !isWhiteTurn;
         game.switchTurns();
     }
+    /**
+     * Undoes the last move if possible.
+     */
     private void undoMove() {
         if (!game.getChessBoard().moveHistory.isEmpty()) {
             game.getChessBoard().undoMovePiece();
@@ -123,6 +142,9 @@ public class ChessGUI extends Application {
             moveHistoryArea.appendText("No move to undo\n");
         }
     }
+    /**
+     * Restarts the game by resetting the board, timers, and move history.
+     */
     private void restartGame() {
         game = new Game();
         chessBoard = game.getChessBoard();
@@ -140,12 +162,16 @@ public class ChessGUI extends Application {
         startTimer();
         updateBoard((GridPane) root.getCenter());
         moveHistoryArea.clear(); // Clear move history
-        System.out.println("New Game!");
     }
+    /**
+     * Updates the chessboard UI by clearing and re-rendering all tiles.
+     * @param gridPane The JavaFX GridPane containing the chessboard.
+     */
     private void updateBoard(GridPane gridPane) {
-        gridPane.getChildren().clear();
+        gridPane.getChildren().clear(); // Clear previous board state
         String basePath = "resources/pieces/";
 
+        // Iterate over each board tile
         for (int row = 0; row < BOARD_SIZE; row++) {
             for (int col = 0; col < BOARD_SIZE; col++) {
                 Button tile = new Button();
@@ -154,7 +180,7 @@ public class ChessGUI extends Application {
                 boolean isHighlighted = false;
                 boolean isSelected = (selectedPiece != null && selectedPiece.getX() == col && selectedPiece.getY() == row);
 
-                // Podświetlenie dostępnych ruchów
+                // Check if the tile is a highlighted move
                 if (highlightedMoves != null) {
                     for (Move move : highlightedMoves) {
                         if (move.getxTarget() == col && move.getyTarget() == row) {
@@ -164,7 +190,7 @@ public class ChessGUI extends Application {
                     }
                 }
 
-                // Ustawienie kolorów dla podświetlonych pól
+                // Set tile background based on state
                 if (isHighlighted) {
                     tile.setStyle("-fx-background-color: lightgreen; -fx-border-color: #32CD32; -fx-border-width: 3px;");
                 } else if (isSelected) {
@@ -174,7 +200,7 @@ public class ChessGUI extends Application {
                             : "-fx-background-color: #b58863; -fx-border-color: #f0d9b5;");
                 }
 
-                // Pobieranie i ustawianie obrazu figury
+                // Assign piece image if a piece is present
                 Piece piece = chessBoard.getPiece(col, row);
                 if (piece != null) {
                     String imageKey = getPieceImage(piece);
@@ -186,7 +212,7 @@ public class ChessGUI extends Application {
                     }
                 }
 
-                // Obsługa kliknięcia na pole
+                // Handle tile click event
                 final int currentRow = row;
                 final int currentCol = col;
                 tile.setOnAction(e -> handleTileClick(currentCol, currentRow, gridPane));
@@ -196,8 +222,14 @@ public class ChessGUI extends Application {
             }
         }
     }
+    /**
+     * Handles user interaction with the chessboard tiles.
+     * @param col The column index of the clicked tile.
+     * @param row The row index of the clicked tile.
+     * @param gridPane The JavaFX GridPane containing the chessboard.
+     */
     private void handleTileClick(int col, int row, GridPane gridPane) {
-        if (gameOver) return;
+        if (gameOver) return; // Do nothing if the game is over
 
         if (selectedPiece == null) {
             selectedPiece = chessBoard.getPiece(col, row);
@@ -208,7 +240,7 @@ public class ChessGUI extends Application {
                 highlightedMoves = selectedPiece.getLegalMoves(chessBoard);
             }
         } else {
-            // Kliknięcie ponownie na ten sam pionek - odznaczenie
+            // Deselect piece if clicking it again
             if (selectedPiece == chessBoard.getPiece(col, row)) {
                 selectedPiece = null;
                 highlightedMoves = null;
@@ -218,6 +250,7 @@ public class ChessGUI extends Application {
 
             Move attemptedMove = null;
 
+            // Check if the selected move is legal
             for (Move move : selectedPiece.getLegalMoves(chessBoard)) {
                 if (move.getxTarget() == col && move.getyTarget() == row) {
                     attemptedMove = move;
@@ -233,6 +266,7 @@ public class ChessGUI extends Application {
                 return;
             }
 
+            // Execute castling move if applicable
             if (attemptedMove.getIsCastle()) {
                 chessBoard.movePiece(attemptedMove);
                 moveHistoryArea.appendText("Castling performed!\n");
@@ -240,6 +274,7 @@ public class ChessGUI extends Application {
                 chessBoard.movePiece(attemptedMove);
             }
 
+            // Prevent moves that put the player in check
             if (chessBoard.isCheck(game.getCurrentPlayer())) {
                 chessBoard.undoMovePiece();
                 moveHistoryArea.appendText("Invalid move: Puts player in check\n");
@@ -249,26 +284,34 @@ public class ChessGUI extends Application {
                 return;
             }
 
+            // Handle pawn promotion
             if (selectedPiece instanceof Pawn && (row == 0 || row == 7)) {
                 Piece promotedPiece = showPromotionDialog(game.getCurrentPlayer(), col, row);
                 chessBoard.setPiece(promotedPiece);
                 game.getCurrentPlayer().addPiece(promotedPiece);
             }
 
-            updateMoveHistory(attemptedMove);
+            updateMoveHistory(attemptedMove); // Log the move in history
             selectedPiece = null;
             highlightedMoves = null;
-            updateBoard(gridPane);
+            updateBoard(gridPane); // Refresh board UI
 
             if (checkGameOver()) {
                 gameOver = true;
                 return;
             }
 
-            switchTurns();
+            switchTurns(); // Swap turns between players
         }
         updateBoard(gridPane);
     }
+    /**
+     * Displays a dialog for pawn promotion, allowing the player to choose a piece.
+     * @param player The player who is promoting the pawn.
+     * @param x The x-coordinate where the pawn is being promoted.
+     * @param y The y-coordinate where the pawn is being promoted.
+     * @return The new piece chosen by the player.
+     */
     private Piece showPromotionDialog(Player player, int x, int y) {
         Dialog<ButtonType> dialog = new Dialog<>();
         dialog.setTitle("Pawn Promotion");
@@ -278,6 +321,7 @@ public class ChessGUI extends Application {
         String[] options = {"Queen", "Rook", "Bishop", "Knight"};
         ButtonType[] types = new ButtonType[4];
 
+        // Create buttons for promotion choices
         for (int i = 0; i < options.length; i++) {
             types[i] = new ButtonType(options[i], ButtonBar.ButtonData.OK_DONE);
             grid.add(new Label(options[i]), i, 0);
@@ -296,11 +340,21 @@ public class ChessGUI extends Application {
             default -> new Queen(player, x, y);
         };
     }
+
+    /**
+     * Updates the move history area with the latest move notation.
+     * @param move The move to be added to the history log.
+     */
     private void updateMoveHistory(Move move) {
         String notation = move.getChessNotation();
         String playerPrefix = (move.getPiece().getColor().equals("White")) ? "W:" : "B:";
         moveHistoryArea.appendText(playerPrefix + notation + "\n");
     }
+
+    /**
+     * Checks if the game is over by determining checkmate or stalemate.
+     * @return true if the game has ended, false otherwise.
+     */
     private boolean checkGameOver() {
         boolean isOtherPlayerInCheck = chessBoard.isCheck(game.getOtherPlayer());
         boolean isOtherPlayerCheckmated = chessBoard.isCheckMate(game.getOtherPlayer());
@@ -318,6 +372,11 @@ public class ChessGUI extends Application {
         return false;
     }
 
+    /**
+     * Retrieves the image file name for a given chess piece.
+     * @param piece The chess piece.
+     * @return The corresponding image file name.
+     */
     private String getPieceImage(Piece piece) {
         return switch (piece.getClass().getSimpleName()) {
             case "Pawn" -> piece.getColor().equals("Black") ? "black_pawn" : "white_pawn";
@@ -329,24 +388,32 @@ public class ChessGUI extends Application {
             default -> "";
         };
     }
+    /**
+     * Loads chess piece images from the resources folder into memory.
+     */
     private void loadPieceImages() {
-        String basePath = "resources/pieces/"; // Ścieżka do folderu z obrazami figur
+        String basePath = "resources/pieces/";
 
-        // Tablica z nazwami plików dla każdej figury
+        // Array containing the names of all chess piece image files
         String[] pieceNames = {"black_pawn", "white_pawn", "black_rook", "white_rook",
                 "black_knight", "white_knight", "black_bishop", "white_bishop",
                 "black_queen", "white_queen", "black_king", "white_king"};
 
-        // Wczytujemy każdy obraz i zapisujemy go w mapie
+        // Load each piece image and store it in the map
         for (String name : pieceNames) {
             File file = new File(basePath + name + ".png");
             if (file.exists()) {
                 pieceImages.put(name, new Image(file.toURI().toString()));
             } else {
-                System.out.println("Błąd ładowania obrazu: " + file.getPath());
+                System.out.println("Error loading image: " + file.getPath());
             }
         }
     }
+
+    /**
+     * Launches the JavaFX application.
+     * @param args Command-line arguments.
+     */
     public static void main(String[] args) {
         launch(args);
     }

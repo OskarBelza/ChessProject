@@ -40,23 +40,28 @@ The project consists of several key classes:
 - Java 11+
 - JavaFX
 
-## Installation and Execution
-1. Clone the repository:
+## Cloning the Chess Game Project
+
+### Steps to Clone the Repository
+
+1. Open a terminal or command prompt.
+2. Run the following command to clone the repository:
    ```sh
-   git clone https://github.com/OskarBelza/ChessProject
+   git clone https://github.com/YourRepository/ChessGame.git
    ```
-2. Navigate to the project directory:
+3. Navigate to the cloned directory:
    ```sh
    cd ChessGame
    ```
-3. Compile the project:
+4. Verify that the files are present:
    ```sh
-   javac *.java
+   ls   # For macOS/Linux
+   dir  # For Windows
    ```
-4. Run the game:
-   ```sh
-   java Main
-   ```
+
+The project is now ready for further setup and execution.
+
+
 
 ## Application Preview
 ![Application Preview](./resources/app_preview.png)
